@@ -32,15 +32,25 @@ type Subject struct {
 	Names []csr.Name `json:"names"`
 }
 
+// Extension represents a raw extension to be included in the certificate.  The
+// "value" field must be Base64 encoded, using the URLEncoding variant (i.e.,
+// the URL-safe alphabet)
+type Extension struct {
+	ID       config.OID `json:"id"`
+	Critical bool       `json:"critical"`
+	Value    string     `json:"value"`
+}
+
 // SignRequest stores a signature request, which contains the hostname,
 // the CSR, optional subject information, and the signature profile.
 type SignRequest struct {
-	Hosts   []string `json:"hosts"`
-	Request string   `json:"certificate_request"`
-	Subject *Subject `json:"subject,omitempty"`
-	Profile string   `json:"profile"`
-	Label   string   `json:"label"`
-	Serial  *big.Int `json:"serial,omitempty"`
+	Hosts      []string    `json:"hosts"`
+	Request    string      `json:"certificate_request"`
+	Subject    *Subject    `json:"subject,omitempty"`
+	Profile    string      `json:"profile"`
+	Label      string      `json:"label"`
+	Serial     *big.Int    `json:"serial,omitempty"`
+	Extensions []Extension `json:"extensions,omitempty"`
 }
 
 // appendIf appends to a if s is not an empty string.
@@ -311,6 +321,14 @@ var (
 	// iso(1) identified-organization(3) dod(6) internet(1) security(5)
 	//   mechanisms(5) pkix(7) id-qt(2) id-qt-unotice(2)
 	iDQTUserNotice = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 2, 2}
+
+	// CTPoisonOID is the object ID of the critical poison extension for precertificates
+	// https://tools.ietf.org/html/rfc6962#page-9
+	CTPoisonOID = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 3}
+
+	// SCTListOID is the object ID for the Signed Certificate Timestamp certificate extension
+	// https://tools.ietf.org/html/rfc6962#page-14
+	SCTListOID = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 2}
 )
 
 // addPolicies adds Certificate Policies and optional Policy Qualifiers to a
