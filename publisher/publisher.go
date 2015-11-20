@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	ct "github.com/google/certificate-transparency/go"
-	ctClient "github.com/google/certificate-transparency/go/client"
+	ct "github.com/letsencrypt/boulder/Godeps/_workspace/src/github.com/google/certificate-transparency/go"
+	ctClient "github.com/letsencrypt/boulder/Godeps/_workspace/src/github.com/google/certificate-transparency/go/client"
 
 	"github.com/letsencrypt/boulder/core"
 	blog "github.com/letsencrypt/boulder/log"
