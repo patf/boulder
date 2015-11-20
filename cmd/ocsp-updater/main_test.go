@@ -41,7 +41,7 @@ type mockPub struct {
 func (p *mockPub) SubmitToCT(_ []byte) error {
 	return p.sa.AddSCTReceipt(&ct.SignedCertificateTimestamp{
 		SCTVersion: 0,
-		LogID:      ct.SHA256Hash{0},
+		LogID:      ct.SHA256Hash{},
 		Timestamp:  0,
 		Extensions: []byte{},
 		Signature: ct.DigitallySigned{

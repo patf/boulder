@@ -448,7 +448,7 @@ func TestDeniedCSR(t *testing.T) {
 var testSCT = ct.SignedCertificateTimestamp{
 	SCTVersion: ct.V1,
 	Timestamp:  1435787268907,
-	LogID:      ct.SHA256Hash{0},
+	LogID:      ct.SHA256Hash{},
 	Signature: ct.DigitallySigned{
 		HashAlgorithm:      ct.SHA256,
 		SignatureAlgorithm: ct.ECDSA,
