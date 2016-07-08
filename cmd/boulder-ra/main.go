@@ -50,6 +50,9 @@ type config struct {
 		// instructs the RA to reuse the previously created authz in lieu of
 		// creating another.
 		ReuseValidAuthz bool
+
+		AuthorizationLifetime        string
+		PendingAuthorizationLifetime string
 	}
 
 	AllowedSigningAlgos *cmd.AllowedSigningAlgos
@@ -116,6 +119,22 @@ func main() {
 	sac, err := rpc.NewStorageAuthorityClient(clientName, amqpConf, stats)
 	cmd.FailOnError(err, "Unable to create SA client")
 
+	// TODO(patf): remove once RA.authorizationLifetime is deployed
+	authorizationLifetime := 300 * 24 * time.Hour
+
+	if c.RA.AuthorizationLifetime != "" {
+		authorizationLifetime, err = time.ParseDuration(c.RA.AuthorizationLifetime)
+		cmd.FailOnError(err, "Couldn't parse authorization lifetime duration")
+	}
+
+	// TODO(patf): remove once RA.pendingAuthorizationLifetime is deployed
+	pendingAuthorizationLifetime := 7 * 24 * time.Hour
+
+	if c.RA.PendingAuthorizationLifetime != "" {
+		pendingAuthorizationLifetime, err = time.ParseDuration(c.RA.PendingAuthorizationLifetime)
+		cmd.FailOnError(err, "Couldn't parse pending authorization lifetime duration")
+	}
+
 	rai := ra.NewRegistrationAuthorityImpl(
 		clock.Default(),
 		logger,
@@ -124,7 +143,9 @@ func main() {
 		c.AllowedSigningAlgos.KeyPolicy(),
 		c.RA.MaxNames,
 		c.RA.DoNotForceCN,
-		c.RA.ReuseValidAuthz)
+		c.RA.ReuseValidAuthz,
+		authorizationLifetime,
+		pendingAuthorizationLifetime)
 
 	policyErr := rai.SetRateLimitPoliciesFile(c.RA.RateLimitPoliciesFilename)
 	cmd.FailOnError(policyErr, "Couldn't load rate limit policies file")
